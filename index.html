@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة الكابلات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Login Styles */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group select,
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 18px;
+        }
+
+        .password-toggle:hover {
+            color: #333;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .supervisor-info {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .supervisor-info h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .supervisor-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .supervisor-item:last-child {
+            border-bottom: none;
+        }
+
+        .supervisor-name {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .supervisor-code {
+            font-family: 'Courier New', monospace;
+            color: #6c757d;
+            font-size: 14px;
+            direction: ltr;
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-title h1 {
+            color: #333;
+            font-size: 24px;
+        }
+
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 50px;
+            border: 2px solid #e1e1e1;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 18px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-text {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        /* Search Results */
+        .search-results {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-results h3 {
+            color: #333;
+            font-size: 18px;
+        }
+
+        .close-search {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #666;
+            padding: 5px;
+        }
+
+        .close-search:hover {
+            color: #333;
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .search-item {
+            padding: 15px;
+            border: 1px solid #e1e1e1;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+
+        .search-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .search-item-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .search-item-warehouse {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .search-item-details {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .search-item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-item-section {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .search-item-quantity {
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* Warehouses Grid */
+        .warehouses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .warehouse-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .warehouse-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .warehouse-header {
+            padding: 25px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .warehouse-header.benzina {
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+        }
+
+        .warehouse-header.jadeed {
+            background: linear-gradient(135deg, #34a853 0%, #fbbc05 100%);
+        }
+
+        .warehouse-header.haj {
+            background: linear-gradient(135deg, #ea4335 0%, #9c27b0 100%);
+        }
+
+        .warehouse-info h3 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .warehouse-info p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .warehouse-icon {
+            font-size: 32px;
+            opacity: 0.8;
+        }
+
+        .warehouse-content {
+            padding: 25px;
+        }
+
+        .warehouse-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .warehouse-tab {
+            flex: 1;
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .warehouse-tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .warehouse-tab:hover:not(.active) {
+            background: #e9ecef;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .tab-header h4 {
+            color: #333;
+            font-size: 16px;
+        }
+
+        .add-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            background: #218838;
+            transform: scale(1.1);
+        }
+
+        .issue-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #ffc107;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .issue-btn:hover {
+            background: #e0a800;
+            transform: scale(1.1);
+        }
+
+        .delete-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #dc3545;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+            transform: scale(1.1);
+        }
+
+        .items-list {
+            min-height: 150px;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .item-details {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .item-quantity {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Statistics */
+        .statistics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .stat-icon.reels {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .stat-icon.cables {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .stat-icon.warehouses {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .stat-icon.length {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .stat-info h4 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .stat-info p {
+            color: #333;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h3 {
+            color: #333;
+            font-size: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 5px;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .search-container {
+                max-width: 100%;
+                order: -1;
+            }
+
+            .warehouses-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .statistics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .modal-content {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+        }
+
+        /* Utilities */
+        .hidden {
+            display: none !important;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        /* Error and Success Messages */
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="loginSection" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="header-icon">🔌</div>
+                <h1>تسجيل دخول المشرف</h1>
+                <p>أدخل بيانات الدخول للوصول إلى النظام</p>
+            </div>
+
+            <div id="loginAlert"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="supervisorSelect">اسم المشرف</label>
+                    <select id="supervisorSelect" required>
+                        <option value="">اختر المشرف</option>
+                        <option value="يوسف محمد">يوسف محمد</option>
+                        <option value="محمود الزوال">محمود الزوال</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="accessCode">كود الدخول</label>
+                    <div class="password-container">
+                        <input type="password" id="accessCode" placeholder="Enter access code" dir="ltr" required>
+                        <button type="button" class="password-toggle" id="passwordToggle">👁️</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn" id="loginBtn">تسجيل الدخول</button>
+            </form>
+
+            <div class="supervisor-info">
+                <h3>المشرفين المسجلين:</h3>
+                <div class="supervisor-item">
+                    <span class="supervisor-name">يوسف محمد</span>
+                    <span class="supervisor-code">yoyo45</span>
+                </div>
+                <div class="supervisor-item">
+                    <span class="supervisor-name">محمود الزوال</span>
+                    <span class="supervisor-code">zawal22</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboardSection" class="dashboard">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-content">
+                    <div class="header-title">
+                        <div class="header-icon">🔌</div>
+                        <h1>نظام إدارة الكابلات</h1>
+                    </div>
+                    <div class="search-container">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" class="search-input" id="globalSearch" placeholder="البحث في جميع المخازن...">
+                    </div>
+                    <div class="user-info">
+                        <span class="welcome-text" id="welcomeText">مرحباً</span>
+                        <button class="logout-btn" id="logoutBtn">تسجيل خروج</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            <div id="searchResults" class="search-results">
+                <div class="search-results-header">
+                    <h3>نتائج البحث</h3>
+                    <button class="close-search" id="closeSearch">✖️</button>
+                </div>
+                <div id="searchGrid" class="search-grid">
+                    <!-- Search results will be displayed here -->
+                </div>
+            </div>
+
+            <!-- Warehouses -->
+            <div class="warehouses-grid">
+                <!-- Warehouse 1: بنزينة -->
+                <div class="warehouse-card">
+                    <div class="warehouse-header benzina">
+                        <div class="warehouse-info">
+                            <h3>مخزن البنزينة</h3>
+                            <p>المخزن الرئيسي</p>
+                        </div>
+                        <div class="warehouse-icon">🏭</div>
+                    </div>
+                    <div class="warehouse-content">
+                        <div class="warehouse-tabs">
+                            <button class="warehouse-tab active" onclick="switchTab('benzina', 'reels')">بكرات</button>
+                            <button class="warehouse-tab" onclick="switchTab('benzina', 'cables')">كابلات</button>
+                            <button class="warehouse-tab" onclick="switchTab('benzina', 'issuedReels')">بكرات مصروفة</button>
+                            <button class="warehouse-tab" onclick="switchTab('benzina', 'issuedCables')">كابلات مصروفة</button>
+                        </div>
+                        
+                        <!-- Reels Tab -->
+                        <div id="benzina-reels" class="tab-content active">
+                            <div class="tab-header">
+                                <h4>البكرات المتاحة</h4>
+                                <button class="add-btn" onclick="openAddModal('benzina', 'reels', 'مخزن البنزينة')">+</button>
+                            </div>
+                            <div class="items-list" id="benzina-reels-list">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📦</div>
+                                    <p>لا توجد بكرات في هذا المخزن</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cables Tab -->
+                        <div id="benzina-cables" class="tab-content">
+                            <div class="tab-header">
+                                <h4>الكابلات المقطوعة</h4>
+                                <button class="add-btn" onclick="openAddModal('benzina', 'cables', 'مخزن البنزينة')">+</button>
+                            </div>
+                            <div class="items-list" id="benzina-cables-list">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">🔌</div>
+                                    <p>لا توجد كابلات في هذا المخزن</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Issued Reels Tab -->
+                        <div id="benzina-issuedReels" class="tab-content">
+                            <div class="tab-header">
+                                <h4>البكرات المصروفة</h4>
+                            </div>
+                            <div class="items-list" id="benzina-issuedReels-list">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📤</div>
+                                    <p>لا توجد بكرات مصروفة من هذا المخزن</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Issued Cables Tab -->
+                        <div id="benzina-issuedCables" class="tab-content">
+                            <div class="tab-header">
+                                <h4>الكابلات المصروفة</h4>
+                            </div>
+                            <div class="items-list" id="benzina-issuedCables-list">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📤</div>
+                                    <p>لا توجد كابلات مصروفة من هذا المخزن</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Warehouse 2: الجديد -->
+                <div class="warehouse-card">
+                    <div class="warehouse-header jadeed">
+                        <div class="warehouse-info">
+                            <h3>مخزن الجديد</h3>
+                            <p>المخزن الثانوي</p>
+                        </div>
+                        <div class="warehouse-icon">🏪</div>
+                    </div>
+                    <div class="warehouse-content">
+                        <div class="warehouse-tabs">
+                            <button class="warehouse-tab active" onclick="switchTab('jadeed', 'reels')">بكرات</button>
+                            <button class="warehouse-tab" onclick="switchTab('jadeed', 'cables')">كابلات</button>
+                            <button class="warehouse-tab" onclick="switchTab('jadeed', 'issuedReels')">بكرات مصروفة</button>
+                            <button class="warehouse-tab" onclick="switchTab('jadeed', 'issuedCables')">كابلات مصروفة</button>
+                        </div>
+                        
+                        <!-- Reels Tab -->
+                        <div id="jadeed-reels" class="tab-content active">
+                            <div class="tab-header">
+                                <h4>البكرات المتاحة</h4>
+                                <button class="add-btn" onclick="openAddModal('jadeed', 'reels', 'مخزن الجديد')">+</button>
+                            </div>
+                            <div class="items-list" id="jadeed-reels-list">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📦</div>
+                                    <p>لا توجد بكرات في هذا المخزن</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cables Tab -->
+                        <div id="jadeed-cables" class="tab-content">
+                            <div class="tab-header">
+                                <h4>الكابلات المقطوعة</h4>
+                                <button class="add-btn" onclick="openAddModal('jadeed', 'cables', 'مخزن الجديد')">+</button>
+                            </div>
+                            <div class="items-list" id="jadeed-cables-list">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">🔌</div>
+                                    <p>لا توجد كابلات في هذا المخزن</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Issued Reels Tab -->
+                        <div id="jadeed-issuedReels" class="tab-content">
+                            <div class="tab-header">
+                                <h4>البكرات المصروفة</h4>
+                            </div>
+                            <div class="items-list" id="jadeed-issuedReels-list">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📤</div>
+                                    <p>لا توجد بكرات مصروفة من هذا المخزن</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Issued Cables Tab -->
+                        <div id="jadeed-issuedCables" class="tab-content">
+                            <div class="tab-header">
+                                <h4>الكابلات المصروفة</h4>
+                            </div>
+                            <div class="items-list" id="jadeed-issuedCables-list">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📤</div>
+                                    <p>لا توجد كابلات مصروفة من هذا المخزن</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Warehouse 3: الحاج -->
+                <div class="warehouse-card">
+                    <div class="warehouse-header haj">
+                        <div class="warehouse-info">
+                            <h3>مخزن الحاج</h3>
+                            <p>المخزن الفرعي</p>
+                        </div>
+                        <div class="warehouse-icon">🏪</div>
+                    </div>
+                    <div class="warehouse-content">
+                        <div class="warehouse-tabs">
+                            <button class="warehouse-tab active" onclick="switchTab('haj', 'reels')">بكرات</button>
+                            <button class="warehouse-tab" onclick="switchTab('haj', 'cables')">كابلات</button>
+                            <button class="warehouse-tab" onclick="switchTab('haj', 'issuedReels')">بكرات مصروفة</button>
+                            <button class="warehouse-tab" onclick="switchTab('haj', 'issuedCables')">كابلات مصروفة</button>
+                        </div>
+                        
+                        <!-- Reels Tab -->
+                        <div id="haj-reels" class="tab-content active">
+                            <div class="tab-header">
+                                <h4>البكرات المتاحة</h4>
+                                <button class="add-btn" onclick="openAddModal('haj', 'reels', 'مخزن الحاج')">+</button>
+                            </div>
+                            <div class="items-list" id="haj-reels-list">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📦</div>
+                                    <p>لا توجد بكرات في هذا المخزن</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cables Tab -->
+                        <div id="haj-cables" class="tab-content">
+                            <div class="tab-header">
+                                <h4>الكابلات المقطوعة</h4>
+                                <button class="add-btn" onclick="openAddModal('haj', 'cables', 'مخزن الحاج')">+</button>
+                            </div>
+                            <div class="items-list" id="haj-cables-list">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">🔌</div>
+                                    <p>لا توجد كابلات في هذا المخزن</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Issued Reels Tab -->
+                        <div id="haj-issuedReels" class="tab-content">
+                            <div class="tab-header">
+                                <h4>البكرات المصروفة</h4>
+                            </div>
+                            <div class="items-list" id="haj-issuedReels-list">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📤</div>
+                                    <p>لا توجد بكرات مصروفة من هذا المخزن</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Issued Cables Tab -->
+                        <div id="haj-issuedCables" class="tab-content">
+                            <div class="tab-header">
+                                <h4>الكابلات المصروفة</h4>
+                            </div>
+                            <div class="items-list" id="haj-issuedCables-list">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📤</div>
+                                    <p>لا توجد كابلات مصروفة من هذا المخزن</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="statistics">
+                <div class="stat-card">
+                    <div class="stat-icon reels">📦</div>
+                    <div class="stat-info">
+                        <h4>بكرات متاحة</h4>
+                        <p id="totalReels">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon cables">🔌</div>
+                    <div class="stat-info">
+                        <h4>كابلات متاحة</h4>
+                        <p id="totalCables">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon reels" style="background: linear-gradient(135deg, #f0ad4e 0%, #e67e22 100%);">📤</div>
+                    <div class="stat-info">
+                        <h4>بكرات مصروفة</h4>
+                        <p id="totalIssuedReels">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon cables" style="background: linear-gradient(135deg, #f0ad4e 0%, #e67e22 100%);">📤</div>
+                    <div class="stat-info">
+                        <h4>كابلات مصروفة</h4>
+                        <p id="totalIssuedCables">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warehouses">🏪</div>
+                    <div class="stat-info">
+                        <h4>عدد المخازن</h4>
+                        <p>3</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon length">📏</div>
+                    <div class="stat-info">
+                        <h4>إجمالي الأطوال</h4>
+                        <p id="totalLength">0 م</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div id="addItemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">إضافة عنصر جديد</h3>
+                <button class="modal-close" onclick="closeAddModal()">✖️</button>
+            </div>
+
+            <div id="modalAlert"></div>
+
+            <form id="addItemForm" class="modal-form">
+                <div class="form-group">
+                    <label for="itemName">الاسم</label>
+                    <input type="text" id="itemName" placeholder="اسم العنصر" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="itemType">النوع</label>
+                    <select id="itemType" required>
+                        <option value="">اختر النوع</option>
+                        <option value="نحاس">نحاس</option>
+                        <option value="ألومنيوم">ألومنيوم</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="itemDiameter">القطر (مم)</label>
+                        <input type="number" id="itemDiameter" placeholder="القطر بالمليمتر" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemLength">الطول (متر)</label>
+                        <input type="number" id="itemLength" placeholder="الطول بالمتر" min="1" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="itemQuantity">الكمية</label>
+                    <input type="number" id="itemQuantity" placeholder="عدد القطع" min="1" value="1" required>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn" id="submitBtn">إضافة</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAddModal()">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Issue Item Modal -->
+    <div id="issueItemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="issueModalTitle">صرف عنصر</h3>
+                <button class="modal-close" onclick="closeIssueModal()">✖️</button>
+            </div>
+
+            <div id="issueModalAlert"></div>
+
+            <div id="issueItemInfo" class="form-group" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <!-- Item info will be displayed here -->
+            </div>
+
+            <form id="issueItemForm" class="modal-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="issueQuantity">الكمية المطلوب صرفها</label>
+                        <input type="number" id="issueQuantity" placeholder="عدد القطع" min="1" required>
+                        <small style="color: #666; margin-top: 5px; display: block;">الكمية المتاحة: <span id="availableQuantity">0</span></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="issueMeters">عدد الأمتار المصروفة</label>
+                        <input type="number" id="issueMeters" placeholder="عدد الأمتار" min="0" step="0.1">
+                        <small style="color: #666; margin-top: 5px; display: block;">لتسجيل الأمتار المستخدمة من البكرة أو الكابل</small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="issueDate">تاريخ الصرف</label>
+                    <input type="date" id="issueDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="requesterName">اسم الطالب</label>
+                    <input type="text" id="requesterName" placeholder="اسم الطالب (بالعربية)" required dir="rtl">
+                </div>
+
+                <div class="form-group">
+                    <label for="issueNotes">ملاحظات (اختياري)</label>
+                    <textarea id="issueNotes" placeholder="ملاحظات إضافية" rows="3" dir="rtl"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn" id="issueSubmitBtn">صرف</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeIssueModal()">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAakWPtUJrUYkoUf9fDzo1Ll9frP0h8HTU",
+  authDomain: "system-cables-management.firebaseapp.com",
+  projectId: "system-cables-management",
+  storageBucket: "system-cables-management.appspot.com",
+  messagingSenderId: "be42f926ddcf1809d786f8",
+  appId: "1:be42f926ddcf1809d786f8:web:xxxxxxxxxxxxxx" // 👈 هنا لازم تحط الـ appId اللي بيطلعلك من Firebase
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+;
+
+
+    // For now, let's work with local storage until Firebase is properly configured
+        // Temporary storage solution
+        let useLocalStorage = false;
+
+        // Application State
+        let currentUser = null;
+        let currentModal = {
+            warehouse: '',
+            section: '',
+            warehouseName: '',
+            type: '', // 'add' or 'issue'
+            itemId: null
+        };
+
+        // Prevent double-save variables
+        let saveInProgress = false;
+        let lastSaveTime = 0;
+
+        // Data Storage
+        let inventoryData = {
+            benzina: { reels: [], cables: [], issuedReels: [], issuedCables: [] },
+            jadeed: { reels: [], cables: [], issuedReels: [], issuedCables: [] },
+            haj: { reels: [], cables: [], issuedReels: [], issuedCables: [] }
+        };
+
+        // Supervisor Credentials
+        const supervisors = {
+            'يوسف محمد': 'yoyo45',
+            'محمود الزوال': 'zawal22'
+        };
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEventListeners();
+            updateStatistics();
+        });
+
+        function initializeEventListeners() {
+            // Login Form
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm && !loginForm.hasAttribute('data-listener-added')) {
+                loginForm.addEventListener('submit', handleLogin);
+                loginForm.setAttribute('data-listener-added', 'true');
+            }
+            
+            // Password Toggle
+            document.getElementById('passwordToggle').addEventListener('click', togglePassword);
+            
+            // Logout Button
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+            
+            // Global Search
+            document.getElementById('globalSearch').addEventListener('input', handleGlobalSearch);
+            
+            // Close Search
+            document.getElementById('closeSearch').addEventListener('click', closeSearchResults);
+            
+            // Add Item Form
+            const addItemForm = document.getElementById('addItemForm');
+            if (addItemForm && !addItemForm.hasAttribute('data-listener-added')) {
+                addItemForm.addEventListener('submit', handleAddItem);
+                addItemForm.setAttribute('data-listener-added', 'true');
+            }
+            
+            // Issue Item Form
+            const issueItemForm = document.getElementById('issueItemForm');
+            if (issueItemForm && !issueItemForm.hasAttribute('data-listener-added')) {
+                issueItemForm.addEventListener('submit', handleIssueItem);
+                issueItemForm.setAttribute('data-listener-added', 'true');
+            }
+
+            // Modal backdrop click
+            document.getElementById('addItemModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeAddModal();
+                }
+            });
+            
+            // Issue Modal backdrop click
+            document.getElementById('issueItemModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeIssueModal();
+                }
+            });
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const supervisorName = document.getElementById('supervisorSelect').value;
+            const accessCode = document.getElementById('accessCode').value;
+            const loginBtn = document.getElementById('loginBtn');
+            
+            if (!supervisorName || !accessCode) {
+                showAlert('loginAlert', 'يرجى اختيار المشرف وإدخال كود الدخول', 'error');
+                return;
+            }
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'جاري تسجيل الدخول...';
+            
+            // Simulate login delay
+            setTimeout(() => {
+                if (supervisors[supervisorName] === accessCode) {
+                    currentUser = supervisorName;
+                    document.getElementById('welcomeText').textContent = `مرحباً ${supervisorName}`;
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('dashboardSection').classList.add('active');
+                    showAlert('loginAlert', 'تم تسجيل الدخول بنجاح', 'success');
+                } else {
+                    showAlert('loginAlert', 'بيانات الدخول غير صحيحة', 'error');
+                }
+                
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'تسجيل الدخول';
+            }, 1000);
+        }
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('accessCode');
+            const toggleBtn = document.getElementById('passwordToggle');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            document.getElementById('loginSection').style.display = 'flex';
+            document.getElementById('dashboardSection').classList.remove('active');
+            document.getElementById('loginForm').reset();
+            document.getElementById('globalSearch').value = '';
+            closeSearchResults();
+        }
+
+        function switchTab(warehouse, section) {
+            // Find the warehouse card containing the tabs
+            const warehouseCard = document.getElementById(`${warehouse}-reels`).closest('.warehouse-card');
+            if (!warehouseCard) return;
+            
+            // Update tab buttons
+            const tabs = warehouseCard.querySelectorAll('.warehouse-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Find and activate the correct tab
+            let targetTabText;
+            switch(section) {
+                case 'reels': targetTabText = 'بكرات'; break;
+                case 'cables': targetTabText = 'كابلات'; break;
+                case 'issuedReels': targetTabText = 'بكرات مصروفة'; break;
+                case 'issuedCables': targetTabText = 'كابلات مصروفة'; break;
+            }
+            
+            const activeTab = Array.from(tabs).find(tab => tab.textContent.trim() === targetTabText);
+            if (activeTab) {
+                activeTab.classList.add('active');
+            }
+            
+            // Update tab content
+            const allSections = ['reels', 'cables', 'issuedReels', 'issuedCables'];
+            allSections.forEach(sec => {
+                const element = document.getElementById(`${warehouse}-${sec}`);
+                if (element) {
+                    element.classList.remove('active');
+                }
+            });
+            
+            const targetElement = document.getElementById(`${warehouse}-${section}`);
+            if (targetElement) {
+                targetElement.classList.add('active');
+            }
+        }
+
+        function openAddModal(warehouse, section, warehouseName) {
+            currentModal = { warehouse, section, warehouseName, type: 'add', itemId: null };
+            
+            const modalTitle = document.getElementById('modalTitle');
+            const sectionText = section === 'reels' ? 'بكرة' : 'كابل';
+            modalTitle.textContent = `إضافة ${sectionText} جديد`;
+            
+            document.getElementById('addItemModal').classList.add('active');
+            document.getElementById('addItemForm').reset();
+            document.getElementById('itemQuantity').value = '1';
+            clearAlert('modalAlert');
+        }
+
+        function openIssueModal(warehouse, section, warehouseName, itemId) {
+            currentModal = { warehouse, section, warehouseName, type: 'issue', itemId };
+            
+            const item = inventoryData[warehouse][section].find(i => i.id === itemId);
+            if (!item) return;
+            
+            // Update modal title
+            const modalTitle = document.getElementById('issueModalTitle');
+            modalTitle.textContent = `صرف ${item.name}`;
+            
+            // Display item info
+            const itemInfo = document.getElementById('issueItemInfo');
+            const availableMeters = item.remainingMeters || (item.length * item.quantity);
+            itemInfo.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <strong>${item.name}</strong>
+                    <span style="background: #667eea; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">${item.warehouse}</span>
+                </div>
+                <div style="color: #666; font-size: 14px; margin-bottom: 8px;">النوع: ${item.type} - القطر: ${item.diameter}مم - الطول: ${item.length}م</div>
+                <div style="color: #666; font-size: 14px; margin-bottom: 8px;">الكمية المتاحة: ${item.quantity} ${item.quantity === 1 ? 'قطعة' : 'قطع'}</div>
+                <div style="color: #666; font-size: 14px; font-weight: bold;">الأمتار المتبقية: <span style="color: ${availableMeters > 0 ? '#4CAF50' : '#f44336'}">${availableMeters} م</span></div>
+            `;
+            
+            // Set available quantity and max value
+            document.getElementById('availableQuantity').textContent = item.quantity;
+            document.getElementById('issueQuantity').max = item.quantity;
+            document.getElementById('issueQuantity').value = '1';
+            
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('issueDate').value = today;
+            
+            document.getElementById('issueItemModal').classList.add('active');
+            document.getElementById('issueItemForm').reset();
+            document.getElementById('issueQuantity').value = '1';
+            document.getElementById('issueMeters').value = '';
+            clearAlert('issueModalAlert');
+        }
+
+        function closeAddModal() {
+            document.getElementById('addItemModal').classList.remove('active');
+            clearAlert('modalAlert');
+            saveInProgress = false; // Reset save flag
+            
+            // Reset button text
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'إضافة';
+            }
+            
+            // Re-enable form elements
+            const form = document.getElementById('addItemForm');
+            if (form) {
+                enableForm(form);
+            }
+        }
+
+        function closeIssueModal() {
+            document.getElementById('issueItemModal').classList.remove('active');
+            clearAlert('issueModalAlert');
+            saveInProgress = false; // Reset save flag
+            
+            // Reset button text
+            const issueSubmitBtn = document.getElementById('issueSubmitBtn');
+            if (issueSubmitBtn) {
+                issueSubmitBtn.disabled = false;
+                issueSubmitBtn.textContent = 'صرف';
+            }
+            
+            // Re-enable form elements
+            const form = document.getElementById('issueItemForm');
+            if (form) {
+                enableForm(form);
+            }
+        }
+
+        function handleAddItem(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const now = Date.now();
+            
+            // Prevent double-save with debouncing (1000ms minimum between saves)
+            if (saveInProgress || (now - lastSaveTime) < 1000) {
+                console.log('Save operation blocked - too frequent or already in progress');
+                return false;
+            }
+            
+            saveInProgress = true;
+            lastSaveTime = now;
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'جاري الحفظ...';
+            
+            // Disable the entire form to prevent any interaction
+            const form = e.target;
+            const formInputs = form.querySelectorAll('input, select, textarea, button');
+            formInputs.forEach(input => input.disabled = true);
+            
+            const itemName = document.getElementById('itemName').value.trim();
+            const itemType = document.getElementById('itemType').value;
+            const itemDiameter = document.getElementById('itemDiameter').value;
+            const itemLength = document.getElementById('itemLength').value;
+            const itemQuantity = parseInt(document.getElementById('itemQuantity').value);
+            
+            if (!itemName || !itemType || !itemDiameter || !itemLength || !itemQuantity) {
+                showAlert('modalAlert', 'يرجى ملء جميع الحقول المطلوبة', 'error');
+                resetSaveButton(submitBtn, originalText);
+                enableForm(form);
+                return false;
+            }
+            
+            setTimeout(() => {
+                try {
+                    const newItem = {
+                        id: generateId(),
+                        name: itemName,
+                        type: itemType,
+                        diameter: parseInt(itemDiameter),
+                        length: parseInt(itemLength),
+                        quantity: itemQuantity,
+                        remainingMeters: parseInt(itemLength) * itemQuantity,
+                        warehouse: currentModal.warehouseName,
+                        addedBy: currentUser,
+                        addedDate: new Date().toISOString().split('T')[0],
+                        addedTime: new Date().toLocaleTimeString('ar-SA')
+                    };
+                    
+                    inventoryData[currentModal.warehouse][currentModal.section].push(newItem);
+                    updateItemsList(currentModal.warehouse, currentModal.section);
+                    updateStatistics();
+                    closeAddModal();
+                    showAlert('modalAlert', `تم إضافة ${currentModal.section === 'reels' ? 'البكرة' : 'الكابل'} بنجاح`, 'success');
+                    resetSaveButton(submitBtn, originalText);
+                } catch (error) {
+                    console.error('Error adding item:', error);
+                    showAlert('modalAlert', 'حدث خطأ أثناء إضافة العنصر', 'error');
+                    resetSaveButton(submitBtn, originalText);
+                    enableForm(form);
+                }
+            }, 500);
+            
+            return false;
+        }
+
+        function handleIssueItem(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const now = Date.now();
+            
+            // Prevent double-save with debouncing
+            if (saveInProgress || (now - lastSaveTime) < 1000) {
+                console.log('Issue operation blocked - too frequent or already in progress');
+                return false;
+            }
+            
+            saveInProgress = true;
+            lastSaveTime = now;
+            
+            const issueSubmitBtn = document.getElementById('issueSubmitBtn');
+            const originalText = issueSubmitBtn.textContent;
+            issueSubmitBtn.disabled = true;
+            issueSubmitBtn.textContent = 'جاري الصرف...';
+            
+            // Disable the entire form
+            const form = e.target;
+            const formInputs = form.querySelectorAll('input, select, textarea, button');
+            formInputs.forEach(input => input.disabled = true);
+            
+            const issueQuantity = parseInt(document.getElementById('issueQuantity').value);
+            const issueMeters = parseFloat(document.getElementById('issueMeters').value) || 0;
+            const issueDate = document.getElementById('issueDate').value;
+            const requesterName = document.getElementById('requesterName').value.trim();
+            const issueNotes = document.getElementById('issueNotes').value.trim();
+            
+            if (!issueQuantity || !issueDate || !requesterName) {
+                showAlert('issueModalAlert', 'يرجى ملء جميع الحقول المطلوبة', 'error');
+                resetSaveButton(issueSubmitBtn, originalText);
+                enableForm(form);
+                return false;
+            }
+            
+            setTimeout(() => {
+                try {
+                    const item = inventoryData[currentModal.warehouse][currentModal.section].find(i => i.id === currentModal.itemId);
+                    if (!item) {
+                        throw new Error('العنصر غير موجود');
+                    }
+                    
+                    if (issueQuantity > item.quantity) {
+                        throw new Error('الكمية المطلوبة أكبر من المتاح');
+                    }
+                    
+                    // Check if enough meters are available (if meters specified)
+                    if (issueMeters > 0) {
+                        const availableMeters = item.remainingMeters || (item.length * item.quantity);
+                        if (issueMeters > availableMeters) {
+                            throw new Error(`الأمتار المطلوبة (${issueMeters}) أكبر من المتاح (${availableMeters} متر)`);
+                        }
+                    }
+                    
+                    // Create issued item record
+                    const issuedItem = {
+                        id: generateId(),
+                        originalId: item.id,
+                        name: item.name,
+                        type: item.type,
+                        diameter: item.diameter,
+                        length: item.length,
+                        quantity: issueQuantity,
+                        meters: issueMeters,
+                        warehouse: item.warehouse,
+                        issueDate: issueDate,
+                        issueTime: new Date().toLocaleTimeString('ar-SA'),
+                        requesterName: requesterName,
+                        notes: issueNotes,
+                        issuedBy: currentUser
+                    };
+                    
+                    // Add to issued items
+                    const issuedSection = currentModal.section === 'reels' ? 'issuedReels' : 'issuedCables';
+                    inventoryData[currentModal.warehouse][issuedSection].push(issuedItem);
+                    
+                    // Initialize remainingMeters if not exists
+                    if (!item.remainingMeters) {
+                        item.remainingMeters = item.length * item.quantity;
+                    }
+                    
+                    // Subtract meters if specified, otherwise calculate based on issued quantity
+                    if (issueMeters > 0) {
+                        item.remainingMeters -= issueMeters;
+                    } else {
+                        // If no meters specified, subtract proportionally based on quantity
+                        const metersPerPiece = item.length;
+                        item.remainingMeters -= (metersPerPiece * issueQuantity);
+                    }
+                    
+                    // Update quantity but keep item in inventory
+                    item.quantity -= issueQuantity;
+                    
+                    // Ensure remaining meters doesn't go below 0
+                    item.remainingMeters = Math.max(0, item.remainingMeters);
+                    
+                    // DON'T remove item - keep it in inventory to track remaining meters
+                    
+                    updateItemsList(currentModal.warehouse, currentModal.section);
+                    updateItemsList(currentModal.warehouse, issuedSection);
+                    updateStatistics();
+                    closeIssueModal();
+                    showAlert('issueModalAlert', 'تم صرف العنصر بنجاح', 'success');
+                    resetSaveButton(issueSubmitBtn, originalText);
+                } catch (error) {
+                    console.error('Error issuing item:', error);
+                    showAlert('issueModalAlert', error.message || 'حدث خطأ أثناء صرف العنصر', 'error');
+                    resetSaveButton(issueSubmitBtn, originalText);
+                    enableForm(form);
+                }
+            }, 500);
+            
+            return false;
+        }
+
+        function enableForm(form) {
+            const formInputs = form.querySelectorAll('input, select, textarea, button');
+            formInputs.forEach(input => input.disabled = false);
+        }
+
+        function resetSaveButton(button, originalText) {
+            saveInProgress = false;
+            button.disabled = false;
+            button.textContent = originalText;
+        }
+
+        function handleGlobalSearch() {
+            const searchTerm = document.getElementById('globalSearch').value.trim().toLowerCase();
+            
+            if (searchTerm.length < 2) {
+                closeSearchResults();
+                return;
+            }
+            
+            const results = [];
+            
+            // Search in all warehouses and sections
+            Object.keys(inventoryData).forEach(warehouse => {
+                ['reels', 'cables'].forEach(section => {
+                    inventoryData[warehouse][section].forEach(item => {
+                        if (item.name.toLowerCase().includes(searchTerm) ||
+                            item.type.toLowerCase().includes(searchTerm)) {
+                            results.push({
+                                ...item,
+                                warehouseKey: warehouse,
+                                sectionKey: section
+                            });
+                        }
+                    });
+                });
+            });
+            
+            displaySearchResults(results);
+        }
+
+        function displaySearchResults(results) {
+            const searchResults = document.getElementById('searchResults');
+            const searchGrid = document.getElementById('searchGrid');
+            
+            if (results.length === 0) {
+                searchGrid.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">لم يتم العثور على نتائج</p>';
+            } else {
+                searchGrid.innerHTML = results.map(item => `
+                    <div class="search-item">
+                        <div class="search-item-header">
+                            <span class="search-item-name">${item.name}</span>
+                            <span class="search-item-warehouse">${item.warehouse}</span>
+                        </div>
+                        <div class="search-item-details">
+                            النوع: ${item.type} - القطر: ${item.diameter}مم - الطول: ${item.length}م
+                        </div>
+                        <div class="search-item-footer">
+                            <span class="search-item-section">${item.sectionKey === 'reels' ? 'بكرات' : 'كابلات'}</span>
+                            <span class="search-item-quantity">${item.quantity} ${item.quantity === 1 ? 'قطعة' : 'قطع'}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            searchResults.classList.add('active');
+        }
+
+        function closeSearchResults() {
+            document.getElementById('searchResults').classList.remove('active');
+        }
+
+        function updateItemsList(warehouse, section) {
+            const container = document.getElementById(`${warehouse}-${section}-list`);
+            const items = inventoryData[warehouse][section];
+            
+            if (items.length === 0) {
+                let emptyIcon, emptyText;
+                switch(section) {
+                    case 'reels':
+                        emptyIcon = '📦';
+                        emptyText = 'لا توجد بكرات في هذا المخزن';
+                        break;
+                    case 'cables':
+                        emptyIcon = '🔌';
+                        emptyText = 'لا توجد كابلات في هذا المخزن';
+                        break;
+                    case 'issuedReels':
+                        emptyIcon = '📤';
+                        emptyText = 'لا توجد بكرات مصروفة من هذا المخزن';
+                        break;
+                    case 'issuedCables':
+                        emptyIcon = '📤';
+                        emptyText = 'لا توجد كابلات مصروفة من هذا المخزن';
+                        break;
+                }
+                
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">${emptyIcon}</div>
+                        <p>${emptyText}</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = items.map(item => {
+                    if (section.includes('issued')) {
+                        return `
+                            <div class="item">
+                                <div class="item-info">
+                                    <div class="item-name">${item.name}</div>
+                                    <div class="item-details">
+                                        النوع: ${item.type} - القطر: ${item.diameter}مم - الطول: ${item.length}م<br>
+                                        صرف لـ: ${item.requesterName} في ${item.issueDate}<br>
+                                        ${item.meters > 0 ? `الأمتار المصروفة: ${item.meters} م<br>` : ''}
+                                        ${item.notes ? `ملاحظات: ${item.notes}` : ''}
+                                    </div>
+                                </div>
+                                <div class="item-quantity">${item.quantity}</div>
+                            </div>
+                        `;
+                    } else {
+                        const remainingMeters = item.remainingMeters || (item.length * item.quantity);
+                        const isAvailable = item.quantity > 0 && remainingMeters > 0;
+                        return `
+                            <div class="item" style="${!isAvailable ? 'opacity: 0.7; background: #f9f9f9;' : ''}">
+                                <div class="item-info">
+                                    <div class="item-name">${item.name} ${!isAvailable ? '(مستنفد)' : ''}</div>
+                                    <div class="item-details">
+                                        النوع: ${item.type} - القطر: ${item.diameter}مم - الطول الأصلي: ${item.length}م<br>
+                                        الكمية المتبقية: <strong>${item.quantity}</strong><br>
+                                        الأمتار المتبقية: <strong style="color: ${remainingMeters > 0 ? '#4CAF50' : '#f44336'}">${remainingMeters} م</strong>
+                                    </div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div class="item-quantity">${item.quantity}</div>
+                                    ${isAvailable ? `<button class="issue-btn" onclick="openIssueModal('${warehouse}', '${section}', '${item.warehouse}', '${item.id}')" title="صرف">📤</button>` : ''}
+                                    <button class="delete-btn" onclick="deleteItem('${warehouse}', '${section}', '${item.id}')" title="حذف">🗑️</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }).join('');
+            }
+        }
+
+        function deleteItem(warehouse, section, itemId) {
+            if (confirm('هل أنت متأكد من حذف هذا العنصر؟')) {
+                const itemIndex = inventoryData[warehouse][section].findIndex(item => item.id === itemId);
+                if (itemIndex > -1) {
+                    inventoryData[warehouse][section].splice(itemIndex, 1);
+                    updateItemsList(warehouse, section);
+                    updateStatistics();
+                }
+            }
+        }
+
+        function updateStatistics() {
+            let totalReels = 0, totalCables = 0, totalIssuedReels = 0, totalIssuedCables = 0, totalAvailableMeters = 0, totalIssuedMeters = 0;
+            
+            Object.keys(inventoryData).forEach(warehouse => {
+                totalReels += inventoryData[warehouse].reels.reduce((sum, item) => sum + item.quantity, 0);
+                totalCables += inventoryData[warehouse].cables.reduce((sum, item) => sum + item.quantity, 0);
+                totalIssuedReels += inventoryData[warehouse].issuedReels.reduce((sum, item) => sum + item.quantity, 0);
+                totalIssuedCables += inventoryData[warehouse].issuedCables.reduce((sum, item) => sum + item.quantity, 0);
+                
+                // Calculate available meters from remaining stock
+                inventoryData[warehouse].reels.forEach(item => {
+                    totalAvailableMeters += item.remainingMeters || (item.length * item.quantity);
+                });
+                inventoryData[warehouse].cables.forEach(item => {
+                    totalAvailableMeters += item.remainingMeters || (item.length * item.quantity);
+                });
+                
+                // Calculate issued meters
+                inventoryData[warehouse].issuedReels.forEach(item => {
+                    totalIssuedMeters += item.meters || 0;
+                });
+                inventoryData[warehouse].issuedCables.forEach(item => {
+                    totalIssuedMeters += item.meters || 0;
+                });
+            });
+            
+            document.getElementById('totalReels').textContent = totalReels;
+            document.getElementById('totalCables').textContent = totalCables;
+            document.getElementById('totalIssuedReels').textContent = totalIssuedReels;
+            document.getElementById('totalIssuedCables').textContent = totalIssuedCables;
+            document.getElementById('totalLength').textContent = `${totalAvailableMeters} م متاحة`;
+        }
+
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function showAlert(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            
+            setTimeout(() => {
+                clearAlert(containerId);
+            }, 5000);
+        }
+
+        function clearAlert(containerId) {
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.innerHTML = '';
+            }
+        }
+
+        // Make functions globally available
+        window.switchTab = switchTab;
+        window.openAddModal = openAddModal;
+        window.openIssueModal = openIssueModal;
+        window.closeAddModal = closeAddModal;
+        window.closeIssueModal = closeIssueModal;
+        window.deleteItem = deleteItem;
+    
+// Firestore functions (معدلة)
+async function addInventoryItem(item) {
+  try {
+    await addDoc(collection(db, "inventory"), item);
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+}
+
+async function updateInventoryItem(id, updatedFields) {
+  try {
+    const itemRef = doc(db, "inventory", id);
+    await updateDoc(itemRef, updatedFields);
+  } catch (e) {
+    console.error("Error updating document: ", e);
+  }
+}
+
+async function deleteInventoryItem(id) {
+  try {
+    await deleteDoc(doc(db, "inventory", id));
+  } catch (e) {
+    console.error("Error deleting document: ", e);
+  }
+}
+
+function listenToInventoryUpdates(callback) {
+  const q = query(collection(db, "inventory"), orderBy("name"));
+  onSnapshot(q, (snapshot) => {
+    const data = [];
+    snapshot.forEach((doc) => {
+      data.push({ id: doc.id, ...doc.data() });
+    });
+    callback(data);
+  });
+}
+
+</script>
+</body>
+</html>
