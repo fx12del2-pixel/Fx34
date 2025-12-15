@@ -1,185 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة المخازن</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-    <header class="brand-header">
-        <h1>المؤسسة المصرية الكابلات</h1>
-    </header>
-
-    <nav class="navbar no-print">
-        <div class="nav-brand">📦 إدارة الكابلات</div>
-        <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
-        <ul class="nav-links" id="navLinks">
-            <li><button data-tab="benzine" class="nav-btn active">مخزن بنزينه</button></li>
-            <li><button data-tab="jadid" class="nav-btn">مخزن جديد</button></li>
-            <li><button data-tab="haj" class="nav-btn">مخزن الحج</button></li>
-            <li><button data-tab="outgoing" class="nav-btn special">صفحة الإصدارات</button></li>
-        </ul>
-    </nav>
-
-    <main id="app">
-        <div class="print-header">
-            <h2 id="printTitle">تقرير</h2>
-            <p id="printDateStr">--</p>
-        </div>
-
-        <section id="view-benzine" class="view active">
-            <header class="view-header">
-                <h1>مخزن بنزينه</h1>
-                <div class="kpi-card"><span>إجمالي الأمتار</span><strong id="total-benzine">0 م</strong></div>
-            </header>
-            <div class="controls no-print">
-                <input type="text" placeholder="بحث..." class="search-input" data-target="table-benzine">
-                <div class="btn-group">
-                    <button class="btn-secondary export-btn" data-warehouse="benzine">📄 CSV</button>
-                    <button class="btn-secondary print-btn">🖨️ طباعة</button>
-                    <button class="btn-primary add-btn" data-warehouse="benzine">➕ إضافة</button>
-                </div>
-            </div>
-            <div class="table-container">
-                <table id="table-benzine">
-                    <thead><tr><th>النوع</th><th>المقاس</th><th>أمتار أولية</th><th>المتبقي</th><th class="no-print">إجراء</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="view-jadid" class="view">
-            <header class="view-header">
-                <h1>مخزن جديد</h1>
-                <div class="kpi-card"><span>إجمالي الأمتار</span><strong id="total-jadid">0 م</strong></div>
-            </header>
-            <div class="controls no-print">
-                <input type="text" placeholder="بحث..." class="search-input" data-target="table-jadid">
-                <div class="btn-group">
-                    <button class="btn-secondary export-btn" data-warehouse="jadid">📄 CSV</button>
-                    <button class="btn-secondary print-btn">🖨️ طباعة</button>
-                    <button class="btn-primary add-btn" data-warehouse="jadid">➕ إضافة</button>
-                </div>
-            </div>
-            <div class="table-container">
-                <table id="table-jadid">
-                    <thead><tr><th>النوع</th><th>المقاس</th><th>أمتار أولية</th><th>المتبقي</th><th class="no-print">إجراء</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="view-haj" class="view">
-            <header class="view-header">
-                <h1>مخزن الحج</h1>
-                <div class="kpi-card"><span>إجمالي الأمتار</span><strong id="total-haj">0 م</strong></div>
-            </header>
-            <div class="controls no-print">
-                <input type="text" placeholder="بحث..." class="search-input" data-target="table-haj">
-                <div class="btn-group">
-                    <button class="btn-secondary export-btn" data-warehouse="haj">📄 CSV</button>
-                    <button class="btn-secondary print-btn">🖨️ طباعة</button>
-                    <button class="btn-primary add-btn" data-warehouse="haj">➕ إضافة</button>
-                </div>
-            </div>
-            <div class="table-container">
-                <table id="table-haj">
-                    <thead><tr><th>النوع</th><th>المقاس</th><th>أمتار أولية</th><th>المتبقي</th><th class="no-print">إجراء</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="view-outgoing" class="view">
-            <header class="view-header">
-                <h1>إصدارات المخازن</h1>
-                <div class="kpi-card info"><span>تسجيل خروج</span></div>
-            </header>
-            
-            <div class="outgoing-form-card no-print">
-                <h3>إصدار جديد</h3>
-                <form id="outgoingForm">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>المخزن</label>
-                            <select id="outWarehouse" required>
-                                <option value="" disabled selected>اختر...</option>
-                                <option value="benzine">مخزن بنزينه</option>
-                                <option value="jadid">مخزن جديد</option>
-                                <option value="haj">مخزن الحج</option>
-                            </select>
-                        </div>
-                        <div class="form-group"><label>التاريخ</label><input type="date" id="outDate" required></div>
-                        <div class="form-group"><label>المستلم</label><input type="text" id="outRecipient" required></div>
-                        <div class="form-group"><label>العنصر</label><select id="outItem" required disabled><option value="">اختر المخزن أولاً</option></select></div>
-                        <div class="form-group"><label>أمتار</label><input type="number" id="outMeters" min="0.1" step="0.1" required></div>
-                    </div>
-                    <button type="submit" class="btn-success block">✅ تسجيل</button>
-                </form>
-            </div>
-
-            <div class="controls report-controls no-print">
-                <div class="filter-group">
-                    <input type="date" id="filterDate">
-                    <button id="btnFilterDate" class="btn-secondary">🔍 فلترة</button>
-                    <button id="btnResetFilter" class="btn-outline">↺ الكل</button>
-                </div>
-                <div class="actions-group">
-                    <button id="btnExportOutgoing" class="btn-secondary">📄 CSV</button>
-                    <button id="btnPrintOutgoing" class="btn-primary">🖨️ تقرير</button>
-                </div>
-            </div>
-            <div class="controls report-controls no-print" style="margin-top:10px;border-top:1px solid #eee;padding-top:10px;">
-                 <div class="filter-group">
-                    <label style="color:var(--danger)">تنظيف:</label>
-                    <input type="date" id="clearDate">
-                    <button id="btnClearHistory" class="btn-danger">🗑️ حذف القديم</button>
-                </div>
-            </div>
-
-            <div class="table-container printable-area">
-                <table id="table-outgoing">
-                    <thead><tr><th>التاريخ</th><th>المخزن</th><th>المستلم</th><th>النوع</th><th>المقاس</th><th>المصروف</th><th class="no-print">حذف</th></tr></thead>
-                    <tbody></tbody>
-                    <tfoot><tr class="total-row"><td colspan="5">الإجمالي</td><td id="total-outgoing-meters">0</td><td class="no-print"></td></tr></tfoot>
-                </table>
-            </div>
-        </section>
-    </main>
-
-    <footer class="main-footer">
-        جميع الحقوق محفوظة © gx20d 2026
-    </footer>
-
-    <div id="itemModal" class="modal no-print">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2 id="modalTitle">إضافة عنصر</h2>
-            <form id="itemForm">
-                <input type="hidden" id="itemId"><input type="hidden" id="itemWarehouse">
-                <div class="form-group">
-                    <label>النوع</label>
-                    <select id="itemType" required>
-                        <option value="ألومنيوم">ألومنيوم</option>
-                        <option value="نحاس">نحاس</option>
-                    </select>
-                </div>
-                <div class="form-group"><label>المقاس</label><input type="text" id="itemSize" required></div>
-                <div class="form-group">
-                    <label id="labelMeters">الأمتار</label>
-                    <input type="number" id="itemMeters" step="0.1" min="0" required>
-                    <small id="helpMeters" style="color:#666;font-size:0.8rem">الرصيد الافتتاحي</small>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-secondary close-modal-btn">إلغاء</button>
-                    <button type="submit" class="btn-success">حفظ</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="toast" class="toast"></div>
-    <script type="module" src="js/main.js"></script>
-</body>
-</html>
